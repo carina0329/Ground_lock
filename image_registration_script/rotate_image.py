@@ -1,5 +1,6 @@
 import numpy as np
 import imutils
+import cv2
 
 def rotate_image(img):
     #scale to 0-255
@@ -41,4 +42,11 @@ def rotate_image(img):
         new_image = np.rot90(new_image)
     
     print(new_image.shape)
-    return new_image/scale_factor
+    return new_image/scale_factor, angle
+
+if __name__ == "__main__":
+    image1_path = '../test_urbana/20231006_154931_98_24b5_3B_Visual_clip.tif'
+    img = cv2.imread(image1_path)
+    img_rotated, angle = rotate_image(img)
+    cv2.imwrite('../test_urbana/test.jpg', img_rotated)
+    print(f"angle is {angle}")

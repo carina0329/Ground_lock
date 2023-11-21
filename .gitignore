@@ -1,1 +1,3 @@
 .DS_Store
+*.jpg
+image_registration_script/__pycache__/
