@@ -45,8 +45,9 @@ def rotate_image(img):
     return new_image/scale_factor, angle
 
 if __name__ == "__main__":
-    image1_path = '../test_urbana/20231006_154931_98_24b5_3B_Visual_clip.tif'
+    image1_path = '../test_urbana/20231006_154454_21_2449_3B_Visual_clip.tif'
     img = cv2.imread(image1_path)
+    cv2.imwrite('../test_urbana/test_before_rotation.jpg', img)
     img_rotated, angle = rotate_image(img)
-    cv2.imwrite('../test_urbana/test.jpg', img_rotated)
+    cv2.imwrite('../test_urbana/test_after_rotation.jpg', img_rotated)
     print(f"angle is {angle}")

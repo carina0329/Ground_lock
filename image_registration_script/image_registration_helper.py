@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import time
 import json
+from shapely.geometry import Polygon
 
 def extract_coordinates(geojson_file_path):
     with open(geojson_file_path, 'r') as file:
@@ -18,11 +19,39 @@ def extract_coordinates(geojson_file_path):
     else:
         print("The GeoJSON file does not contain Feature or FeatureCollection types.")
     return all_coordinates
+def extract_coordinates_basemap(geojson_file_path):
+    all_coordinates = extract_coordinates(geojson_file_path)
+    print(all_coordinates[0][0])
+    min_lon = min(coord[0] for coord in all_coordinates[0][0])
+    max_lon = max(coord[0] for coord in all_coordinates[0][0])
+    min_lat = min(coord[1] for coord in all_coordinates[0][0])
+    max_lat = max(coord[1] for coord in all_coordinates[0][0])
+    return min_lon, max_lon, min_lat, max_lat
+
 
 def transform_coordinates(geojson_file_path, transformed_corners, original_dim):
-    all_coordinates = extract_coordinates(geojson_file_path)
+    min_lon, max_lon, min_lat, max_lat = extract_coordinates_basemap(geojson_file_path)
+    # print(min_lon)
+    # print(max_lon)
+    # print(min_lat)
+    # print(max_lat)
     # calculate the percentage
     w, h = original_dim
+    geo_coords = []
+    for corner in transformed_corners:
+        x_percent = corner[0] / w
+        y_percent = corner[1] / h
+        lon = min_lon + x_percent * (max_lon - min_lon)
+        lat = min_lat + y_percent * (max_lat - min_lat)
+        geo_coords.append((lon, lat))
+    return geo_coords
+
+def compute_iou(geo_coords1, geo_coords2):
+    polygon1 = Polygon(geo_coords1)
+    polygon2 = Polygon(geo_coords2)
+    intersection = polygon1.intersection(polygon2).area
+    union = polygon1.union(polygon2).area
+    return intersection / union if union != 0 else 0
     
     
 # this function is designated to verify the correctness of image registration
@@ -99,7 +128,7 @@ def register_images(image1_path, image2_path, threshold, matcher_type, scale_per
     # Extract the Cartesian coordinates
     transformed_corners = transformed_corners[:2, :].T
     print(transformed_corners)
-    return H, registered_img, transformed_corners
+    return H, registered_img, transformed_corners, (w,h)
 
 def overlay_images(original_image_path, registered_image, blended_image_path, alpha):
     # Load the images
@@ -112,7 +141,5 @@ def overlay_images(original_image_path, registered_image, blended_image_path, al
         original_image = cv2.cvtColor(original_image, cv2.COLOR_GRAY2BGR)
     if len(registered_image.shape) == 2:
         registered_image = cv2.cvtColor(registered_image, cv2.COLOR_GRAY2BGR)
-    # Set transparency: 0.0 is fully transparent, 1.0 is fully opaque
-    # Blend the images
     blended_image = cv2.addWeighted(original_image, 1 - alpha, registered_image, alpha, 0)
     cv2.imwrite(blended_image_path, blended_image)
