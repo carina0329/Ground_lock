@@ -1,0 +1,16 @@
+{
+    "_links": {
+        "_self": "https://api.planet.com/basemaps/v1/mosaics/e0c03fb4-0820-4ff8-be26-06cbaef9a7a7/quads/521-1273?api_key=PLAKba683d39cadc42c4bd3388cfa6836a1d",
+        "download": "https://api.planet.com/basemaps/v1/mosaics/e0c03fb4-0820-4ff8-be26-06cbaef9a7a7/quads/521-1273/full?api_key=PLAKba683d39cadc42c4bd3388cfa6836a1d",
+        "items": "https://api.planet.com/basemaps/v1/mosaics/e0c03fb4-0820-4ff8-be26-06cbaef9a7a7/quads/521-1273/items?api_key=PLAKba683d39cadc42c4bd3388cfa6836a1d",
+        "thumbnail": "https://tiles.planet.com/basemaps/v1/planet-tiles/global_monthly_2021_07_mosaic/gmap/11/521/774.png?api_key=PLAKba683d39cadc42c4bd3388cfa6836a1d"
+    },
+    "bbox": [
+        -88.41796873766349,
+        40.04443757999776,
+        -88.2421874876879,
+        40.17887330972661
+    ],
+    "id": "521-1273",
+    "percent_covered": 100
+}
