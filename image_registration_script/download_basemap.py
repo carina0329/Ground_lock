@@ -210,4 +210,4 @@ if __name__ == "__main__":
     # # basemaps_filtered = filter_mosaics_by_aoi(basemaps, urbana_champaign_aoi_geojson_feature)
     # # basemaps_filtered = fetch_all_mosaics(BASEMAP_API_URL, urbana_champaign_aoi_geojson_feature, auth)
     # download_quads_and_metadata(basemap_desired, auth, '../test_basemap_2021_07')
-    download_champaign_basemap()
+    # download_champaign_basemap()

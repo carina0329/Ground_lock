@@ -4,6 +4,7 @@ import time
 import json
 from shapely.geometry import Polygon
 from sklearn.linear_model import LinearRegression
+from rotate_image import *
 # sift similarity
 # linear regression quality returned by Ransac
 # normalize basemap and do pixel by pixel
@@ -87,22 +88,25 @@ def crop_and_rotate_image(image_path, cropped_rotated_path, col_crop_tuple, row_
 def register_images(image1_path, image2_path, threshold, matcher_type, scale_percent=100):
     start_time = time.time()
     img1 = cv2.imread(image1_path, cv2.IMREAD_GRAYSCALE)
-    img2 = cv2.imread(image2_path, cv2.IMREAD_GRAYSCALE)
+    img2 = cv2.imread(image2_path)
+    img2_rotated, angle = rotate_image(img2)
+    img2_rotated = cv2.convertScaleAbs(img2_rotated)
+    img2_rotated = cv2.cvtColor(img2_rotated, cv2.COLOR_BGR2GRAY)
     # change the depth of the bits, 8 bits per pixel (Visual)
     if img1.dtype != np.uint8:
         # check max val
         img1 = np.uint8(img1 / 256)
-    if img2.dtype != np.uint8:
-        img2 = np.uint8(img2 / 256)
+    if img2_rotated.dtype != np.uint8:
+        img2_rotated = np.uint8(img2_rotated / 256)
     # reduce resolution
     width1 = int(img1.shape[1] * scale_percent / 100)
     height1 = int(img1.shape[0] * scale_percent / 100)
-    width2 = int(img2.shape[1] * scale_percent / 100)
-    height2 = int(img2.shape[0] * scale_percent / 100)
+    width2 = int(img2_rotated.shape[1] * scale_percent / 100)
+    height2 = int(img2_rotated.shape[0] * scale_percent / 100)
     dim1 = (width1, height1)
     dim2 = (width2, height2)
     img1 = cv2.resize(img1, dim1, interpolation=cv2.INTER_AREA)
-    img2 = cv2.resize(img2, dim2, interpolation=cv2.INTER_AREA)
+    img2 = cv2.resize(img2_rotated, dim2, interpolation=cv2.INTER_AREA)
     sift = cv2.SIFT_create()
     kp1, des1 = sift.detectAndCompute(img1, None)
     kp2, des2 = sift.detectAndCompute(img2, None)
@@ -189,6 +193,3 @@ def overlay_images(original_image_path, registered_image, blended_image_path, al
         registered_image = cv2.cvtColor(registered_image, cv2.COLOR_GRAY2BGR)
     blended_image = cv2.addWeighted(original_image, 1 - alpha, registered_image, alpha, 0)
     cv2.imwrite(blended_image_path, blended_image)
-
-min_lon, min_lat, max_lon, max_lat = extract_coordinates_basemap("../test_basemap/0c24ddd9-ddec-4ffa-9124-d12581f6c1ea/quad_1087-3414_metadata.json")
-print(min_lon)
